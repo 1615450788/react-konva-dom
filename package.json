@@ -1,6 +1,6 @@
 {
   "name": "react-konva-dom",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "react-konva-dom",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -32,10 +32,19 @@
     "react-konva": "^1.7.12"
   },
   "author": "",
-  "homepage": "",
+  "homepage": "https://github.com/1615450788/react-konva-dom#readme",
   "license": "MIT",
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1615450788/react-konva-dom.git"
+  },
   "keywords": [
     "react-component"
-  ]
+  ],
+  "directories": {
+    "test": "tests"
+  },
+  "bugs": {
+    "url": "https://github.com/1615450788/react-konva-dom/issues"
+  }
 }
