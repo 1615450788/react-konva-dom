@@ -1,7 +1,7 @@
 {
-  "name": "dom",
+  "name": "react-konva-dom",
   "version": "1.0.0",
-  "description": "dom React component",
+  "description": "react-konva-dom",
   "main": "lib/index.js",
   "module": "es/index.js",
   "files": [
@@ -24,9 +24,12 @@
     "react": "16.x"
   },
   "devDependencies": {
+    "konva": "^2.2.1",
+    "lodash": "^4.17.10",
     "nwb": "0.23.x",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "react-konva": "^1.7.12"
   },
   "author": "",
   "homepage": "",
