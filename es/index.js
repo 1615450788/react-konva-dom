@@ -6,175 +6,190 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-import { Layer, Stage, Rect } from 'react-konva';
+import { Text, Rect, Group } from 'react-konva';
 import React, { Component } from 'react';
-import Div from './documentFlow';
+import _ from 'lodash';
+import * as Css from './css';
+import Events from './events';
 
-var GoBang = function (_Component) {
-  _inherits(GoBang, _Component);
+var Div = function (_Component) {
+  _inherits(Div, _Component);
 
-  function GoBang() {
-    _classCallCheck(this, GoBang);
+  function Div(props) {
+    _classCallCheck(this, Div);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, _Component.call(this, props));
 
-    var _this = _possibleConstructorReturn(this, _Component.call.apply(_Component, [this].concat(args)));
-
-    _this.state = { x: 100, y: 100, ratio: 1 };
+    _this.state = {
+      height: []
+    };
     return _this;
   }
 
-  GoBang.prototype.componentDidMount = function componentDidMount() {
-    this.stage = this.refs.stage;
+  Div.prototype.initLocalState = function initLocalState() {
+    this.sumHeight = 0; //累计行高，不含当前行
+    this.height = 0; //当前行高
+    this.width = 0; //当前行宽
+    this.x = this.props.x; //容器X坐标
+    this.y = this.props.y; //容器Y坐标
+    this.w = this.props.width; //容器宽度
+    this.h = this.props.height; //容器高度
+    return;
   };
 
-  GoBang.prototype._getState = function _getState() {
-    return this.refs.stage;
+  Div.prototype.eventOption = function eventOption() {
+    var props = this.props;
+    var option = {};
+    Events.forEach(function (v) {
+      if (props[v] && typeof props[v] === 'function') {
+        option[v] = props[v];
+      }
+    });
+    return option;
   };
 
-  GoBang.prototype.render = function render() {
+  Div.prototype.styleOption = function styleOption() {
+    var option = {};
+    var style = this.props.style;
+
+    Object.keys(style).forEach(function (v) {
+      if (Css[v]) {
+        Object.assign(option, Css[v](style[v]));
+      }
+    });
+    return option;
+  };
+
+  Div.prototype.formatCoord = function formatCoord(children) {
     var _this2 = this;
 
+    var result = [];
+    var indexDiv = 0;
+    var _props = this.props,
+        x = _props.x,
+        y = _props.y,
+        width = _props.width,
+        ratio = _props.ratio;
+
+    var changeHeight = function changeHeight(h) {
+      return _this2.changeHeight(h);
+    };
+    if (_.isObjectLike(children)) {
+      if (!_.isArray(children)) {
+        children = [children];
+      }
+      _.each(children, function (v, i) {
+
+        //处理样式继承，计算出继承后样式
+        var props = Object.assign({ x: x, y: y, width: width, height: 0 }, v.props);
+
+        //如果为子Div组件则不计算ratio，让其自行计算
+        if (v.type.tagName === 'Div') {
+          var obj = { ratio: ratio };
+          if (props.height === 0) {
+            console.log(_this2.state.height[indexDiv]);
+            obj.height = _this2.state.height[indexDiv];
+          }
+          Object.assign(props, obj);
+          indexDiv++;
+        }
+
+        //判断是否绝对定位，否则不进行布局计算
+        if (!_this2.isAbsolute(v.props)) {
+          Object.assign(props, _this2.calcLayout(props), { changeHeight: changeHeight });
+        }
+
+        if (v.type.name !== 'Div') {
+          Object.assign(props, _this2.calcRatio(props));
+        }
+
+        result.push(_extends({}, v, { props: props }));
+      });
+    }
+    return result;
+  };
+
+  Div.prototype.isAbsolute = function isAbsolute(obj) {
+    return _.has(obj, 'x') || _.has(obj, 'y');
+  };
+
+  Div.prototype.calcLayout = function calcLayout(layout) {
+    var area = {};
+    //判断是当前行是否能容纳该元素，如果不能则换行处理
+    if (this.w >= this.width + layout.width) {
+      area = {
+        x: this.x + this.width,
+        y: this.y + this.sumHeight
+      };
+      if (this.height < layout.height) {
+        this.height = layout.height;
+      }
+      this.width += layout.width;
+    } else {
+      this.sumHeight += this.height;
+      area = {
+        x: this.x,
+        y: this.y + this.sumHeight
+      };
+      this.width = layout.width;
+      this.height = layout.height;
+    }
+    return area;
+  };
+
+  Div.prototype.calcRatio = function calcRatio() {
+    var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var result = {};
+    var _props2 = this.props,
+        _props2$ratio = _props2.ratio,
+        ratio = _props2$ratio === undefined ? 1 : _props2$ratio,
+        _props2$ratioKeys = _props2.ratioKeys,
+        ratioKeys = _props2$ratioKeys === undefined ? ['x', 'y', 'width', 'height'] : _props2$ratioKeys;
+
+    _.each(ratioKeys, function (v) {
+      if (obj[v]) {
+        result[v] = obj[v] * ratio;
+      }
+    });
+    return result;
+  };
+
+  Div.prototype.changeHeight = function changeHeight(height) {
+    this.setState(function (state) {
+      return {
+        height: state.height.concat([height])
+      };
+    });
+  };
+
+  Div.prototype.componentDidMount = function componentDidMount() {
+    if (this.props.changeHeight) {
+      this.props.changeHeight(this.h);
+    }
+  };
+
+  Div.prototype.render = function render() {
+    this.initLocalState();
+    var events = this.eventOption();
+    var children = this.formatCoord(this.props.children); //.slice().reverse()
+    var styles = Object.assign(this.styleOption(), _.omit(this.props, Object.keys(Css).concat(Events).concat(['children', 'style'])));
+    //容器高度不存在时根据内容撑开
+    if (!this.h) {
+      styles.height = this.h = this.sumHeight + this.height;
+    }
+    Object.assign(styles, this.calcRatio(styles));
     return React.createElement(
-      'div',
-      { className: 'container' },
-      React.createElement(
-        Stage,
-        {
-          ref: 'stage',
-          width: 800,
-          height: 800
-        },
-        React.createElement(
-          Layer,
-          null,
-          React.createElement(
-            Div,
-            _extends({ style: { visibility: 'visible' }
-            }, {
-              x: this.state.x,
-              y: this.state.y,
-              width: 200,
-              ratio: this.state.ratio,
-              fill: '#aaa',
-              stroke: 'black',
-              strokeWidth: 2
-            }),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              width: 100,
-              height: 70,
-              fill: '#000',
-              strokeWidth: 0
-            })),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              width: 100,
-              height: 70,
-              fill: '#333',
-              strokeWidth: 0
-            })),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              x: 1,
-              y: 1,
-              width: 120,
-              height: 50,
-              fill: '#666',
-              strokeWidth: 0
-            })),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              width: 60,
-              height: 50,
-              fill: '#666',
-              strokeWidth: 0
-            })),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              width: 80,
-              height: 50,
-              fill: '#999',
-              strokeWidth: 0
-            })),
-            React.createElement(
-              Div,
-              _extends({ style: { visibility: 'visible' }
-              }, {
-                width: 200,
-                fill: '#aaa',
-                stroke: 'black',
-                strokeWidth: 2
-              }),
-              React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-              }, {
-                width: 120,
-                height: 50,
-                fill: '#bbb',
-                strokeWidth: 0
-              }))
-            ),
-            React.createElement(
-              Div,
-              _extends({ style: { visibility: 'visible' }
-              }, {
-                width: 200,
-                fill: '#aaa',
-                stroke: 'black',
-                strokeWidth: 2
-              }),
-              React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-              }, {
-                width: 120,
-                height: 50,
-                fill: '#bbb',
-                strokeWidth: 0
-              })),
-              React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-              }, {
-                width: 120,
-                height: 50,
-                fill: '#ddd',
-                strokeWidth: 0
-              }))
-            ),
-            React.createElement(Rect, _extends({ style: { visibility: 'visible', width: '100%' }
-            }, {
-              width: 70,
-              height: 50,
-              fill: '#bbb',
-              strokeWidth: 0
-            }))
-          )
-        )
-      ),
-      React.createElement(
-        'button',
-        { onClick: function onClick() {
-            return _this2.setState({ x: _this2.state.x + 20 });
-          } },
-        'X\u589E\u52A020'
-      ),
-      React.createElement(
-        'button',
-        { onClick: function onClick() {
-            return _this2.setState({ y: _this2.state.y + 20 });
-          } },
-        'Y\u589E\u52A020'
-      ),
-      React.createElement(
-        'button',
-        { onClick: function onClick() {
-            return _this2.setState({ ratio: _this2.state.ratio + 0.1 });
-          } },
-        'ratio\u589E\u52A00.1'
-      )
+      Group,
+      events,
+      React.createElement(Rect, styles),
+      children
     );
   };
 
-  return GoBang;
+  return Div;
 }(Component);
 
-export default GoBang;
+Div.tagName = 'Div';
+
+export default Div;
