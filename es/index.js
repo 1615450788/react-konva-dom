@@ -179,7 +179,6 @@ var Div = function (_Component) {
       styles.height = this.h = this.sumHeight + this.height;
     }
     Object.assign(styles, this.calcRatio(styles));
-    console.log(this.props);
     return React.createElement(
       Group,
       events,
