@@ -20,7 +20,7 @@ class Demo extends Component {
         <Stage
           ref="stage"
           width={800}
-          height={800}
+          height={600}
         >
           <Layer>
             <Div style={{ visibility: 'visible' }}
@@ -31,7 +31,8 @@ class Demo extends Component {
                 ratio: this.state.ratio,
                 fill: '#aaa',
                 stroke: 'black',
-                strokeWidth: 2
+                strokeWidth: 2,
+                onClick:e=>console.log(+new Date())
               }}>
               {/* <Board
                 width= {winWidth}

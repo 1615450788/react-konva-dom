@@ -87,7 +87,6 @@ var Div = function (_Component) {
         if (v.type.tagName === 'Div') {
           var obj = { ratio: ratio };
           if (props.height === 0) {
-            console.log(_this2.state.height[indexDiv]);
             obj.height = _this2.state.height[indexDiv];
           }
           Object.assign(props, obj);
@@ -99,7 +98,7 @@ var Div = function (_Component) {
           Object.assign(props, _this2.calcLayout(props), { changeHeight: changeHeight });
         }
 
-        if (v.type.name !== 'Div') {
+        if (v.type.tagName !== 'Div') {
           Object.assign(props, _this2.calcRatio(props));
         }
 
@@ -152,6 +151,7 @@ var Div = function (_Component) {
         result[v] = obj[v] * ratio;
       }
     });
+    console.log;
     return result;
   };
 
@@ -179,6 +179,7 @@ var Div = function (_Component) {
       styles.height = this.h = this.sumHeight + this.height;
     }
     Object.assign(styles, this.calcRatio(styles));
+    console.log(this.props);
     return React.createElement(
       Group,
       events,

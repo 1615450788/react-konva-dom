@@ -1,0 +1,79 @@
+Arguments: 
+  /usr/local/bin/node /opt/local/libexec/yarn/bin/yarn.js
+
+PATH: 
+  /opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/local/bin:/opt/local/sbin
+
+Yarn version: 
+  1.9.2
+
+Node version: 
+  8.11.4
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.npmjs.org/konva: ETIMEDOUT
+      at Timeout._onTimeout (/opt/local/libexec/yarn/lib/cli.js:138076:19)
+      at ontimeout (timers.js:498:11)
+      at tryOnTimeout (timers.js:323:5)
+      at Timer.listOnTimeout (timers.js:290:5)
+
+npm manifest: 
+  {
+    "name": "react-konva-dom",
+    "version": "0.0.2",
+    "description": "react-konva-dom",
+    "main": "lib/index.js",
+    "module": "es/index.js",
+    "files": [
+      "css",
+      "es",
+      "lib",
+      "umd"
+    ],
+    "scripts": {
+      "build": "nwb build-react-component",
+      "clean": "nwb clean-module && nwb clean-demo",
+      "prepublishOnly": "npm run build",
+      "start": "nwb serve-react-demo",
+      "test": "nwb test-react",
+      "test:coverage": "nwb test-react --coverage",
+      "test:watch": "nwb test-react --server"
+    },
+    "dependencies": {},
+    "peerDependencies": {
+      "react": "16.x"
+    },
+    "devDependencies": {
+      "konva": "^2.2.1",
+      "lodash": "^4.17.10",
+      "nwb": "0.23.x",
+      "react": "^16.4.2",
+      "react-dom": "^16.4.2",
+      "react-konva": "^1.7.12"
+    },
+    "author": "",
+    "homepage": "https://github.com/1615450788/react-konva-dom#readme",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/1615450788/react-konva-dom.git"
+    },
+    "keywords": [
+      "react-component"
+    ],
+    "directories": {
+      "test": "tests"
+    },
+    "bugs": {
+      "url": "https://github.com/1615450788/react-konva-dom/issues"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

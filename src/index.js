@@ -63,7 +63,6 @@ class Div extends Component {
         if (v.type.tagName === 'Div') {
             let obj = {ratio}
             if(props.height===0){
-                console.log(this.state.height[indexDiv])
                 obj.height=this.state.height[indexDiv]
             }
             Object.assign(props, obj)
@@ -75,7 +74,7 @@ class Div extends Component {
           Object.assign(props, this.calcLayout(props),{changeHeight})
         }
 
-        if(v.type.name !== 'Div'){
+        if(v.type.tagName !== 'Div'){
             Object.assign(props, this.calcRatio(props))
         }
 
@@ -121,6 +120,7 @@ class Div extends Component {
         result[v] = obj[v] * ratio
       }
     })
+    console.log
     return result
   }
 
